@@ -41,9 +41,23 @@ class Vendor(Base):
 
 
     def __repr__(self) -> str:
-        return "{}".format(self.vendor)
+        return "{}".format(self.private_username)
 
         
+
+class Customer(Base):
+    __tablename__ = "customers"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    private_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+    public_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+    secret_phrase: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+
+
+    def __repr__(self) -> str:
+        return "{}".format(self.private_username)
+
+
+
 
 class ProductCategory(Base):
     __tablename__ = "product_categories"
@@ -103,7 +117,7 @@ class Product(Base):
     # relationships
     vendor: Mapped['Vendor'] = relationship(back_populates="products")
     category: Mapped['ProductCategory'] = relationship(back_populates='products')
-    sub_category: Mapped['ProductCategory'] = relationship(back_populates='products')
+    sub_category: Mapped['ProductSubCategory'] = relationship(back_populates='products')
     
 
 

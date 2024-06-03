@@ -8,6 +8,6 @@ I am creating it as a means to deep dive into a few things I am very passionate 
     - Web Development
     - Harry Potter
 
-While also learning how to securely implement a django project. I hope to one day 
+While also learning how to securely implement a flask project. I hope to one day 
 feel confident enough in this project to turn it into a CTF to teach people how to 
 attack and defend servers.

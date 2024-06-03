@@ -23,13 +23,17 @@ def create_app(**config_overrides):
 	db.init_app(app)
 	
     # register blueprints
+	from .blueprints.admin.views import admin
+	app.register_blueprint(admin)
 	from .blueprints.public.views import public
 	app.register_blueprint(public)
+	from .blueprints.vendor.views import vendor
+	app.register_blueprint(vendor)
 
 	# create database tables
-	with app.app_context():
+	# with app.app_context():
 		# db.drop_all()
-		db.create_all()
+		# db.create_all()
 
 	# launch that sucker to the moon	
 	return app
