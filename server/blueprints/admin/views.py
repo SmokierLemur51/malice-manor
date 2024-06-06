@@ -17,7 +17,7 @@ def index():
         "title": "Welcome Team",
         "market_name": os.environ["MARKET_NAME"],
     }
-    return render_template("index.html", elements=elements)
+    return render_template("admin_index.html", elements=elements)
 
 
 
@@ -28,7 +28,7 @@ def vendors():
         "market_name": os.environ["MARKET_NAME"],
         "vendors": db.session.scalars(db.select(Vendor)).all(),
     }
-    return render_template("vendors.html", elements=elements)
+    return render_template("admin_vendors.html", elements=elements)
 
 
 
@@ -40,7 +40,7 @@ def customers():
         "market_name": os.environ["MARKET_NAME"],
         "customers": db.session.scalars(db.select(Customer)).all(),
     }
-    return render_template("customers.html", elements=elements)
+    return render_template("admin_customers.html", elements=elements)
 
 
 

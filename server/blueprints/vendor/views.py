@@ -26,4 +26,4 @@ def index():
         "market_name": os.environ["MARKET_NAME"],
     }
 
-    return render_template("index.html", elements=elements)
+    return render_template("vendor_index.html", elements=elements)

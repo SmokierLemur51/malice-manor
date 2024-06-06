@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 
 {% block staticFiles %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
@@ -24,14 +24,6 @@
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="{{ url_for('admin.customers') }}">Customers</a>
             </li>
-            
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('admin.orders') }}">Orders</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('admin.escrow') }}">Escrow</a>
-            </li>
       </div>
   </div>
 </nav>
@@ -47,29 +39,12 @@
       Sign In
       </div>
       <div class="card-body text-center">
-          <!-- login form -->
-          <div class="card" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <a href="#" class="card-link">Card link</a>
-              <a href="#" class="card-link">Another link</a>
-            </div>
-          </div>
+        {% for v in elements['vendors'] %}          
+            <p>{{ v.public_username }}</p>
+        {% endfor %}
       </div>
   </div>
 </div>
 
-<div class="container-lg text-center">
-    <div class="card" style="width: 50%;">
-    <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        <a href="#" class="card-link">Card link</a>
-        <a href="#" class="card-link">Another link</a>
-    </div>
-    </div>
-</div>
+
 {% endblock main %}
