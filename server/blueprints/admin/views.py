@@ -11,6 +11,14 @@ from ...models.models import db, Vendor, Customer
 admin = Blueprint('admin', __name__, template_folder="templates/admin", url_prefix="/admin")
 
 
+@admin.route("/test/populate")
+def populate_view():
+    from ...models.tests.category_pop import populate_categories, populate_sub_categories
+    populate_categories(db)
+    populate_sub_categories(db)
+    return redirect(url_for('admin.index'))
+
+
 @admin.route("/")
 def index():
     elements = {
@@ -18,7 +26,6 @@ def index():
         "market_name": os.environ["MARKET_NAME"],
     }
     return render_template("admin_index.html", elements=elements)
-
 
 
 @admin.route("/vendors")
@@ -31,8 +38,6 @@ def vendors():
     return render_template("admin_vendors.html", elements=elements)
 
 
-
-
 @admin.route("/customers")
 def customers():
     elements = {
@@ -43,8 +48,6 @@ def customers():
     return render_template("admin_customers.html", elements=elements)
 
 
-
-
 @admin.route("/orders")
 def orders():
     elements = {
@@ -53,8 +56,6 @@ def orders():
         # "orders": db.session.scalars(db.select(Order)).all(),
     }
     return render_template("orders.html", elements=elements)
-
-
 
 
 @admin.route("/escrow")

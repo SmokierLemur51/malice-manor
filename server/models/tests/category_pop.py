@@ -3,12 +3,13 @@
 
 """
 from typing import List
+
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
-
 from sqlalchemy.exc import IntegrityError
 
-from ..models import ProductCategory, ProductSubCategorys
+from ..models import ProductCategory, ProductSubCategory
+
 
 def populate_categories(db: SQLAlchemy) -> None:
     categories = [
@@ -58,7 +59,7 @@ def parse_for_category_id(categories: List[ProductCategory], term: str) -> int:
     """ 
     Params:
     -categories: List[ProductCategory], list of categories to parse through.
-    -term: str, search term, non case sensitive, it recieves .title() string method
+    -term: str, search term, non-case-sensitive, it receives .title() string method
     """
     for c in categories:
         if c.category == term.title():
@@ -66,9 +67,8 @@ def parse_for_category_id(categories: List[ProductCategory], term: str) -> int:
     return 0
 
 
-
 def populate_sub_categories(db: SQLAlchemy) -> None:
-    categories = db.session.scalars(db.select(ProductCategories)).all()
+    categories = db.session.scalars(db.select(ProductCategory)).all()
     sub_categories = [
         ProductSubCategory(
             parent_category_id=parse_for_category_id(categories, "books"),
