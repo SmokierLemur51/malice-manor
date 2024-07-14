@@ -1,3 +1,7 @@
+"""
+Module: vendors.populate
+Description: 
+"""
 from typing import List
 from flask_sqlalchemy import SQLAlchemy
 
@@ -12,4 +16,4 @@ def vendors(db: SQLAlchemy) -> None:
             secret_phrase="",
             hashed_pw=fbcrypt.generate_password_hash()
         ),
-    ]
+]
