@@ -18,9 +18,12 @@ def create_app(**config_overrides):
 	# config overrides
 	app.config.update(config_overrides)
 
-	# sqlalchemy
-	from .models.models import db
+	# extensions	
+    from .models.models import db
 	db.init_app(app)
+    
+    from .extensions import fbcrypt
+    fbcrypt.init_app(app)
 
 	# register blueprints
 	from .blueprints.admin.views import admin

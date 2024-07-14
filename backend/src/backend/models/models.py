@@ -26,12 +26,25 @@ class Vendor(Base):
     private_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
     public_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
     secret_phrase: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+    hashed_pw: Mapped[str] = mapped_column(String(60), nullable=False)
+    score: Mapped[int] = mapped_column(Integer, default=1)
 
     listings: Mapped[List['Listing']] = relationship(back_populates='vendor')
 
     def __repr__(self) -> str:
         return "{}".format(self.private_username)
+    
+    def sign_message(self, message: str) -> str: # sign message with self.priv_key
+        return message
 
+    def encrypt_message(self, message: str, customer: Customer) -> str: # encrypt message with customer.pub_key
+        return message
+
+    def decrypt_message(self, message: str) -> str: # decrypt message from sender using self.pub_key
+        return message
+
+    def verify_message(self, message: str) -> str: # verify messages were sent by customer
+        return message
 
 class Customer(Base):
     __tablename__ = "customers"
