@@ -27,3 +27,8 @@ def index():
     }
 
     return render_template("vendor_index.html", elements=elements)
+
+
+@vendor.route("/listings")
+def listings():
+    return render_template("listings.html")

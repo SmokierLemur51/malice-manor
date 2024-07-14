@@ -20,16 +20,6 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 
-class Status(Base):
-    __tablename__ = "statuses"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    status: Mapped[str] = mapped_column(String(120), unique=True)
-    info: Mapped[str] = mapped_column(String(500), nullable=True)
-
-    def __repr__(self) -> str:
-        return "{}".format(self.status)
-
-
 class Vendor(Base):
     __tablename__ = "vendors"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -37,7 +27,7 @@ class Vendor(Base):
     public_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
     secret_phrase: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
 
-    products: Mapped[List['Product']] = relationship(back_populates='vendor')
+    listings: Mapped[List['Listing']] = relationship(back_populates='vendor')
 
     def __repr__(self) -> str:
         return "{}".format(self.private_username)
@@ -56,105 +46,119 @@ class Customer(Base):
         return "{}".format(self.private_username)
 
 
-class ProductCategory(Base):
-    __tablename__ = "product_categories"
+class Category(Base):
+    __tablename__ = "categories"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     category: Mapped[str] = mapped_column(String(120), unique=True)
     info: Mapped[str] = mapped_column(String(500), nullable=True)
 
     # relationships
-    products: Mapped[List["Product"]] = relationship(back_populates='category')
-    sub_categories: Mapped[List["ProductSubCategory"]] = relationship(back_populates="parent_category")
+    listings: Mapped[List["Listing"]] = relationship(back_populates='category')
+    sub_categories: Mapped[List["SubCategory"]] = relationship(back_populates="parent_category")
 
     def __repr__(self) -> str:
         return "{}".format(self.category)
 
 
-class ProductSubCategory(Base):
-    __tablename__ = "product_sub_categories"
+class SubCategory(Base):
+    __tablename__ = "sub_categories"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    parent_category_id: Mapped[int] = mapped_column(ForeignKey("product_categories.id"))
+    parent_category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
     sub_category: Mapped[str] = mapped_column(String(120), unique=True)
     info: Mapped[str] = mapped_column(String(500), nullable=True)
 
-    # relationships
-    parent_category: Mapped["ProductCategory"] = relationship(back_populates="sub_categories")
-    products: Mapped[List["Product"]] = relationship(back_populates="sub_category")
+    # relationship
+    parent_category: Mapped["Category"] = relationship(back_populates="sub_categories")
+    listings: Mapped[List["Listing"]] = relationship(back_populates="sub_category")
 
     def __repr__(self) -> str:
         return "Sub Category: <{}>, Parent Category: <{}>".format(
             self.sub_category, self.parent_category.category)
 
 
-class Product(Base):
-    __tablename__ = "products"
+class Listing(Base):
+    __tablename__ = "listings"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
     deleted_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True)
-    category_id: Mapped[int] = mapped_column(ForeignKey('product_categories.id'), nullable=True)
-    sub_category_id: Mapped[int] = mapped_column(ForeignKey('product_sub_categories.id'))
+    category_id: Mapped[int] = mapped_column(ForeignKey('categories.id'), nullable=True)
+    sub_category_id: Mapped[int] = mapped_column(ForeignKey('sub_categories.id'))
     vendor_id: Mapped[int] = mapped_column(ForeignKey('vendors.id'))
-    # The vendor must provide information about their units of measurement.
-    # Ex:
-    #   Using milliliters vs fluid ounces
-    uom: Mapped[str] = mapped_column(String(100))
-    # Total amount of the units of measurement the listing is offering.
-    # Ex:
-    #   5 of the 150 millileter vials of liquid luck.
-    quantity: Mapped[int] = mapped_column(Integer, default=1)
-    # Vendor will provide info about the quantity that is offered.
-    quantity_info: Mapped[str] = mapped_column(String(250), nullable=False)
+   
     name: Mapped[str] = mapped_column(String(120), unique=True)
     info: Mapped[str] = mapped_column(String(500), nullable=True)
     selling: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
 
     # relationships
-    uom: Mapped['UnitOfMeasurement'] = relationship(back_populates='products')
-    vendor: Mapped['Vendor'] = relationship(back_populates='products')
-    category: Mapped['ProductCategory'] = relationship(back_populates='products')
-    sub_category: Mapped['ProductSubCategory'] = relationship(back_populates='products')
+    vendor: Mapped['Vendor'] = relationship(back_populates='listings')
+    category: Mapped['ProductCategory'] = relationship(back_populates='listings')
+    sub_category: Mapped['ProductSubCategory'] = relationship(back_populates='listings')
+
+    def __repr__(self) -> str:
+        return "Product: {}, Vendor: {}".format(self.name, self.vendor.public_username)
 
 
-class Order(Base):
-    __tablename__ = "orders"
+
+class Cart(Base):
+    __tablename__ = "carts"
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
     deleted_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True)
-    customer_id: Mapped[int] = mapped_column(ForeignKey('customers.id'))
-    price: Mapped[float] = mapped_column(Float, default=0.0)
+    paid_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True)
+    ordered_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True)
+    customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"))
+    total: Mapped[float] = mapped_column(Float)
 
-    customer: Mapped["Customer"] = relationship(back_populates="orders")
-    items: Mapped[List["OrderItem"]] = relationship(back_populates="order")
-    escrow: Mapped["Escrow"] = relationship(back_populates="order")
-
-
-class Escrow(Base):
-    __tablename__ = "escrows"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    order_id: Mapped[int] = mapped_column(ForeignKey('orders.id'))
-    deposited: Mapped[bool] = mapped_column(Boolean, default=False)
-    shipped: Mapped[bool] = mapped_column(Boolean, default=False)
-    received: Mapped[bool] = mapped_column(Boolean, default=False)
-    paid: Mapped[bool] = mapped_column(Boolean, default=False)
-
-    order: Mapped["Order"] = relationship(back_populates="escrow")
+    customer: Mapped["Customer"] = relationship(back_populates="cart")
+    items: Mapped[List["CartItem"]] = relationship(back_populates="cart")
 
     def __repr__(self) -> str:
-        return "Escrow {}".format(self.id)
+        return self.customer.public_username
 
+    def get_total(self) -> None:
+        self.total = 0.0    # reset to 0 before looping through cart
+        for i in items:
+            self.total += i.price
 
-class OrderItem(Base):
-    __tablename__ = "order_items"
+    
 
+class CartItem(Base):
+    __tablename__ = "cart_items"
     id: Mapped[int] = mapped_column(primary_key=True)
-    order_id: Mapped[int] = mapped_column(ForeignKey('orders.id'))
-    product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
+    cart_id: Mapped[int] = mapped_column(ForeignKey("carts.id"))
+    listing_id: Mapped[int] = mapped_column(ForeignKey("listings.id"))
+    price: Mapped[float] = mapped_column(Float)
 
-    order: Mapped["Order"] = relationship(back_populates="order_items")
-    product: Mapped["Product"] = relationship(back_populates="order_items")
+    cart: Mapped["Cart"] = relationship(back_populates="items")
+    listing: Mapped["Listing"] = relationship(back_populates="cart_item")
+
+    def __repr__(self) -> str:
+        return self.product.name
+
+
+class Order():
+    pass
+
+
+class Escrow():
+    pass
+
+
+class Dispute():
+    pass
+
+
+class VendorReview():
+    pass
+
+
+class ListingReview():
+    pass
+
+
+
