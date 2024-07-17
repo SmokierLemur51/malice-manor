@@ -46,6 +46,7 @@ class Vendor(Base):
     def verify_message(self, message: str) -> str: # verify messages were sent by customer
         return message
 
+
 class Customer(Base):
     __tablename__ = "customers"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -117,7 +118,6 @@ class Listing(Base):
         return "Listing: {}, Vendor: {}".format(self.name, self.vendor.public_username)
 
 
-
 class Cart(Base):
     __tablename__ = "carts"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -141,7 +141,6 @@ class Cart(Base):
             self.total += i.price
 
     
-
 class CartItem(Base):
     __tablename__ = "cart_items"
     id: Mapped[int] = mapped_column(primary_key=True)
