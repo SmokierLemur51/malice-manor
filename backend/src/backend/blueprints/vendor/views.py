@@ -13,10 +13,9 @@ vendor = Blueprint('vendor', __name__, template_folder="templates/vendor", url_p
 
 @vendor.route("/populate")
 def populate():
-    from ...models.tests.vendor_pop import populate_vendors
+    from .populate import populate_vendors
     populate_vendors(db)
     return redirect(url_for("vendor.index"))
-
 
 
 @vendor.route("/")

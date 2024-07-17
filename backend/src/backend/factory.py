@@ -19,11 +19,11 @@ def create_app(**config_overrides):
 	app.config.update(config_overrides)
 
 	# extensions	
-    from .models.models import db
+	from .models.models import db
 	db.init_app(app)
-    
-    from .extensions import fbcrypt
-    fbcrypt.init_app(app)
+
+	from .extensions import fbcrypt
+	fbcrypt.init_app(app)
 
 	# register blueprints
 	from .blueprints.admin.views import admin

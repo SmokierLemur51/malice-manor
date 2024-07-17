@@ -37,7 +37,7 @@ class Vendor(Base):
     def sign_message(self, message: str) -> str: # sign message with self.priv_key
         return message
 
-    def encrypt_message(self, message: str, customer: Customer) -> str: # encrypt message with customer.pub_key
+    def encrypt_message(self, message: str) -> str: # encrypt message with customer.pub_key
         return message
 
     def decrypt_message(self, message: str) -> str: # decrypt message from sender using self.pub_key
@@ -53,7 +53,8 @@ class Customer(Base):
     public_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
     secret_phrase: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
 
-    orders: Mapped[List["Order"]] = relationship(back_populates="customer")
+    # orders: Mapped[List["Order"]] = relationship(back_populates="customer")
+    cart: Mapped["Cart"] = relationship(back_populates="customer")
 
     def __repr__(self) -> str:
         return "{}".format(self.private_username)
@@ -108,11 +109,12 @@ class Listing(Base):
 
     # relationships
     vendor: Mapped['Vendor'] = relationship(back_populates='listings')
-    category: Mapped['ProductCategory'] = relationship(back_populates='listings')
-    sub_category: Mapped['ProductSubCategory'] = relationship(back_populates='listings')
+    category: Mapped['Category'] = relationship(back_populates='listings')
+    sub_category: Mapped['SubCategory'] = relationship(back_populates='listings')
+    cart_items: Mapped[List["CartItem"]] = relationship(back_populates="listing")
 
     def __repr__(self) -> str:
-        return "Product: {}, Vendor: {}".format(self.name, self.vendor.public_username)
+        return "Listing: {}, Vendor: {}".format(self.name, self.vendor.public_username)
 
 
 
@@ -148,7 +150,7 @@ class CartItem(Base):
     price: Mapped[float] = mapped_column(Float)
 
     cart: Mapped["Cart"] = relationship(back_populates="items")
-    listing: Mapped["Listing"] = relationship(back_populates="cart_item")
+    listing: Mapped["Listing"] = relationship(back_populates="cart_items")
 
     def __repr__(self) -> str:
         return self.product.name
