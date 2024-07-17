@@ -18,6 +18,11 @@ def populate():
     return redirect(url_for("vendor.index"))
 
 
+@vendor.route("/login", methods=["GET", "POST"])
+def login():
+    return 
+
+
 @vendor.route("/")
 def index():
     elements = {
