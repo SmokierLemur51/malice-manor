@@ -37,3 +37,16 @@ def login():
             "market_name": os.environ["MARKET_NAME"],
         }
     return render_template("login.html", elements=elements)
+
+
+@public.route("/register-customer", methods=["GET", "POST"])
+def register_customer():
+    return render_template("register_customer.html")
+
+
+@public.route("/register-vendor", methods=["GET", "POST"])
+def register_vendor():
+    #form = RegisterVendorForm()
+    return render_template("register_vendor.html")
+
+
