@@ -46,6 +46,7 @@ class Vendor(Base):
     def verify_message(self, message: str) -> str: # verify messages were sent by customer
         return message
 
+
 class Customer(Base):
     __tablename__ = "customers"
     id: Mapped[int] = mapped_column(primary_key=True)
