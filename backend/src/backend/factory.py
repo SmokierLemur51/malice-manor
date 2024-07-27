@@ -1,15 +1,11 @@
-from dotenv import load_dotenv
-from flask import Flask
-
-
-load_dotenv()
+from quart import Quart
 
 
 def create_app(**config_overrides):
-	app = Flask(__name__, static_url_path='/static')
+	app = Quart(__name__, static_url_path='/static')
 
 	# env config
-	app.config.from_pyfile("settings.py")
+	# app.config.from_pyfile("settings.py")
 
 	# config obj
 	from .config import Config
@@ -19,11 +15,8 @@ def create_app(**config_overrides):
 	app.config.update(config_overrides)
 
 	# extensions	
-	from .models.models import db
+	from .extensions import db
 	db.init_app(app)
-
-	from .extensions import fbcrypt
-	fbcrypt.init_app(app)
 
 	# register blueprints
 	from .blueprints.admin.views import admin
@@ -32,9 +25,5 @@ def create_app(**config_overrides):
 	app.register_blueprint(public)
 	from .blueprints.vendor.views import vendor
 	app.register_blueprint(vendor)
-
-	with app.app_context():
-		db.drop_all()
-		db.create_all()
 
 	return app

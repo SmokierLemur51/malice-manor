@@ -7,15 +7,8 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'this-really-needs-to-be-changed'
-    SQLALCHEMY_DATABASE_URI=f"sqlite:///{os.environ['SQLITE_DB']}.db"
-    """ PG database conn
-    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://{}:{}@{}:5432/{}".format(
-            os.environ["DB_USERNAME"],
-            os.environ['DB_PASSWORD'],
-            os.environ['DB_HOST'],
-            os.environ['DATABASE_NAME'],
-        )
-    """
+    # SQLALCHEMY_DATABASE_URI=f"sqlite:///{os.environ['SQLITE_DB']}.db"
+    QUART_DB_DATABASE_URL = "sqlite:///src/instance/{}.db".format(os.environ["SQLITE_DB"])
 
 class ProductionConfig(Config):
     DEBUG = False

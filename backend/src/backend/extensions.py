@@ -1,4 +1,3 @@
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
+from quart_db import QuartDB
 
-fbcrypt = Bcrypt()
+db = QuartDB()

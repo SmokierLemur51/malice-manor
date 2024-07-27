@@ -1,0 +1,19 @@
+
+CREATE TABLE IF NOT EXISTS vendors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    publiic_username VARCHAR(40) UNIQUE,
+    private_username VARCHAR(40) UNIQUE,
+    password_hash VARCHAR(60),
+    public_key TEXT
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category VARCHAR(100) NOT NULL UNIQUE,
+    info VARCHAR(250)
+);
+
+CREATE TABLE IF NOT EXISTS (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+);

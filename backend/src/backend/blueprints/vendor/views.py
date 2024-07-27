@@ -1,38 +1,33 @@
 import os
 
-from flask import Blueprint, redirect, render_template, url_for, request, current_app
-
-from ...models.models import db, Vendor
-# from ...models import 
-
-# from .forms import 
+from quart import Blueprint, redirect, render_template, url_for, request, current_app
 
 
 vendor = Blueprint('vendor', __name__, template_folder="templates/vendor", url_prefix="/vendors")
 
 
 @vendor.route("/populate")
-def populate():
-    from .populate import populate_vendors
-    populate_vendors(db)
+async def populate():
+    from . import populate as pop 
+    await pop.populate_vendors()
     return redirect(url_for("vendor.index"))
 
 
 @vendor.route("/login", methods=["GET", "POST"])
-def login():
-    return 
+async def login():
+    return await render_template("login.html")
 
 
 @vendor.route("/")
-def index():
+async def index():
     elements = {
         "title": "Welcome",
         "market_name": os.environ["MARKET_NAME"],
     }
 
-    return render_template("vendor_index.html", elements=elements)
+    return await render_template("vendor_index.html", elements=elements)
 
 
 @vendor.route("/listings")
-def listings():
-    return render_template("listings.html")
+async def listings():
+    return await render_template("listings.html")
