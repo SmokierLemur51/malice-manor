@@ -46,6 +46,7 @@ class User(Base, UserMixin):
     
     role: Mapped["Role"] = relationship(back_populates="users")                                        
     vendor: Mapped["Vendor"] = relationship(back_populates="user")
+    customer: Mapped["Customer"] = relationship(back_populates="user")
 
     def __repr__(self) -> str:
         return self.public_username
@@ -68,26 +69,15 @@ class Vendor(Base):
 
     def __repr__(self) -> str:
         return "{}".format(self.private_username)
-    
-    def sign_message(self, message: str) -> str: # sign message with self.priv_key
-        return message
-
-    def encrypt_message(self, message: str) -> str: # encrypt message with customer.pub_key
-        return message
-
-    def decrypt_message(self, message: str) -> str: # decrypt message from sender using self.pub_key
-        return message
-
-    def verify_message(self, message: str) -> str: # verify messages were sent by customer
-        return message
 
 
 class Customer(Base):
     __tablename__ = "customers"
     id: Mapped[int] = mapped_column(primary_key=True)
-    private_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
-    public_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
-    secret_phrase: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    score: Mapped[int] = mapped_column(Integer, default=0)
+
+    user: Mapped["User"] = relationship(back_populates="customer")
 
     # orders: Mapped[List["Order"]] = relationship(back_populates="customer")
     cart: Mapped["Cart"] = relationship(back_populates="customer")

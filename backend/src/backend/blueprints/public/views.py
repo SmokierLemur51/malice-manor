@@ -1,8 +1,9 @@
 import os
 
-from flask import Blueprint, redirect, render_template, url_for, request, current_app
+from flask import Blueprint, flash,redirect, render_template, url_for, request, current_app
+from flask_login import login_user
 
-from .forms import RegisterUserForm, RegisterVendorForm
+from .forms import RegisterUserForm, RegisterVendorForm, LoginForm
 
 from ...extensions import fbcrypt, login_manager
 from ...models.models import db
@@ -23,10 +24,8 @@ def populate():
 # test route
 @public.route("/vendors")
 def vendors():
-    v = db.session.scalars(db.select(Vendor)).all()
-    return v[0].user.private_username
-
-
+    vendors = db.session.scalars(db.select(Vendor)).all()
+    return render_template("x.html", vendors=vendors)
 
 
 @public.route("/")
@@ -38,27 +37,56 @@ def index():
     return render_template("index.html", elements=elements)
 
 
-
-@public.route("/create-account")
-def create_account():
-    elements={
-            "title": "Create Account",
-            "market_name": os.environ["MARKET_NAME"],
-        }
-    return render_template("create_account.html", elements=elements)
-
-
+# This is probably not the best version
 @public.route("/login")
 def login():
-    elements={
-            "title": "Login",
-            "market_name": os.environ["MARKET_NAME"],
-        }
+    elements = {"title": "Login"}
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(
+            db.select(User).where(User.private_username == form.private_username.data)).first()
+        if user and fbcrypt.check_password_hash(user.password, form.private_username.data):
+            login_user(user)
+            if user.role.name == "vendor":
+                return redirect(url_for('vendor.index'))
+            elif user.role.name == "moderator":
+                return redirect(url_for('forum.index'))
+            elif user.role.name == "admin":
+                return redirect(url_for('admin.index'))
+            else:
+                return redirect(url_for('market.index'))
     return render_template("login.html", elements=elements)
 
 
 @public.route("/register-customer", methods=["GET", "POST"])
 def register_customer():
+    elements = {"title": "Register Market Account"}
+    form = RegisterVendorForm()
+    if form.validate_on_submit():
+        if form.password.data == form.password_match.data:
+            u = User(
+                role_id=queries.load_role(db, "customer").id,
+                public_username=form.public_username.data,
+                private_username=form.private_username.data,
+                password=fbcrypt.generate_password_hash(form.password.data),
+                secret_key=generate_secret_key(),
+            )
+            with current_app.app_context():    
+                with db.session.begin():
+                    try:
+                        db.session.add(u)
+                        db.session.flush()
+                        # new vendor
+                        c = Customer(user_id=u.id)
+                        db.session.add(c)
+                        db.session.commit()
+                    except Exception as e:
+                        db.session.rollback()
+                        print(e)
+            return redirect(url_for("public.login"))
+        else:
+            flash("Passwords must match.")
+            return render_template("register_vendor.html", elements=elements, form=form)
     return render_template("register_customer.html")
 
 
@@ -87,9 +115,9 @@ def register_vendor():
                     except Exception as e:
                         db.session.rollback()
                         print(e)
-            return redirect(url_for("public.vendors"))
+            return redirect(url_for("public.login"))
         else:
-            form.username.value = form.username.data
+            flash("Passwords must match.")
             return render_template("register_vendor.html", elements=elements, form=form)
     return render_template("register_vendor.html", elements=elements, form=form)
 

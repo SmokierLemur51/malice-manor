@@ -18,3 +18,6 @@ def check_duplicate_username(db: SQLAlchemy, u: str) -> bool:
     if db.session.scalar(db.select(User).where(User.public_username == u)).first():
         return True
     
+
+def query_user(db: SQLAlchemy, priv: str) -> User|None:
+    return db.session.scalar(db.Select(User).where(User.private_username == priv)).first()

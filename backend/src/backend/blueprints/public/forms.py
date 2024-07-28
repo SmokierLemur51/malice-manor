@@ -18,6 +18,13 @@ class RegisterVendorForm(FlaskForm):
     private_username = StringField(label='Private Username', validators=[DataRequired()])
     password = StringField(label='Password', validators=[DataRequired()])
     password_match = StringField(label='Password', validators=[DataRequired()])
+    public_key = StringField(label="Public PGP Key", validators=[DataRequired()])
+    submit = SubmitField(label="Submit")
+
+
+class LoginForm(FlaskForm):
+    private_username = StringField(label='Private Username', validators=[DataRequired()])
+    password = StringField(label='Password', validators=[DataRequired()])
     submit = SubmitField(label="Submit")
 
 
