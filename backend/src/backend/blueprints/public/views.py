@@ -23,7 +23,8 @@ def populate():
 # test route
 @public.route("/vendors")
 def vendors():
-    return db.session.scalar(db.select(Vendor)).first()
+    v = db.session.scalars(db.select(Vendor)).all()
+    return v[0].user.private_username
 
 
 
@@ -67,7 +68,7 @@ def register_vendor():
     form = RegisterVendorForm()
     if form.validate_on_submit():
         u = User(
-            role=queries.load_role(db, "vendor").id,
+            role_id=queries.load_role(db, "vendor").id,
             public_username=form.public_username.data,
             private_username=form.private_username.data,
             password=fbcrypt.generate_password_hash(form.password.data),
@@ -85,7 +86,7 @@ def register_vendor():
                 except Exception as e:
                     db.session.rollback()
                     print(e)
-        return redirect("public.vendors")
+        return redirect(url_for("public.vendors"))
     return render_template("register_vendor.html", elements=elements, form=form)
 
 
