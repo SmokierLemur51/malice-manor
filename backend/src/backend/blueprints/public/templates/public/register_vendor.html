@@ -91,6 +91,20 @@
                         {% endif %}
                     </div>
                     
+                    <div class="form-group mb-3">
+                        {{ form.password_match.label(class='form-control-lable') }}
+                        {% if form.password_match.errors %}
+                            {{ form.password_match.label(class='form-control form-control-md is-invalid') }}
+                            <div class="invalid-feedback">
+                                {% for error in form.password_match.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.password_match(class='form-control form-control-md')}}
+                        {% endif %}
+                    </div>
+
                     <div class="form-group text-center mb-3">
                         {{ form.submit(class='btn btn-primary signature-color-button', style='width: 75%;') }}
                     </div>

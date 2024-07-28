@@ -67,26 +67,30 @@ def register_vendor():
     elements = {"title": "Register Vendor Account"}
     form = RegisterVendorForm()
     if form.validate_on_submit():
-        u = User(
-            role_id=queries.load_role(db, "vendor").id,
-            public_username=form.public_username.data,
-            private_username=form.private_username.data,
-            password=fbcrypt.generate_password_hash(form.password.data),
-            secret_key=generate_secret_key(),
-        )
-        with current_app.app_context():    
-            with db.session.begin():
-                try:
-                    db.session.add(u)
-                    db.session.flush()
-                    # new vendor
-                    v = Vendor(user_id=u.id)
-                    db.session.add(v)
-                    db.session.commit()
-                except Exception as e:
-                    db.session.rollback()
-                    print(e)
-        return redirect(url_for("public.vendors"))
+        if form.password.data == form.password_match.data:
+            u = User(
+                role_id=queries.load_role(db, "vendor").id,
+                public_username=form.public_username.data,
+                private_username=form.private_username.data,
+                password=fbcrypt.generate_password_hash(form.password.data),
+                secret_key=generate_secret_key(),
+            )
+            with current_app.app_context():    
+                with db.session.begin():
+                    try:
+                        db.session.add(u)
+                        db.session.flush()
+                        # new vendor
+                        v = Vendor(user_id=u.id)
+                        db.session.add(v)
+                        db.session.commit()
+                    except Exception as e:
+                        db.session.rollback()
+                        print(e)
+            return redirect(url_for("public.vendors"))
+        else:
+            form.username.value = form.username.data
+            return render_template("register_vendor.html", elements=elements, form=form)
     return render_template("register_vendor.html", elements=elements, form=form)
 
 
