@@ -2,7 +2,6 @@
 
 {% block staticFiles %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-<script type="text/javascript" src="{{ url_for('static', filename='js/learn.js') }}"></script>
 {% endblock staticFiles %}
 
 
@@ -21,8 +20,16 @@
                 <a class="nav-link" aria-current="page" href="{{ url_for('public.login') }}">Login</a>
             </li>
 
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('public.create_account') }}">Sign Up</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Create Account
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('public.register_customer') }}">Register Customer Account</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('public.register_vendor') }}">Register Vendor Account</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{{ url_for('public.moderator_application') }}">Apply for Mod Account</a></li>
+              </ul>
             </li>
       </div>
   </div>

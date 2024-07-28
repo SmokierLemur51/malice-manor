@@ -1,0 +1,122 @@
+{% extends 'public.html' %}
+
+{% block staticFiles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock staticFiles %}
+
+
+{% block navbar %}
+<!-- top navbar start -->
+<nav class="navbar navbar-expand-lg mb-8 signature-color">
+  <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('public.index') }}">Higginbotham Painting</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                  <a class="nav-link" aria-current="page" href="{{ url_for('public.index') }}">Home</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" aria-current="page" href="{{ url_for('public.about') }}">About Us</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Services
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ url_for('public.residential') }}">Residential Painting</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('public.commercial') }}">Commercial Painting</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('public.exterior') }}">Exterior Painting</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="{{ url_for('public.services') }}">All Services</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" aria-current="page" href="{{ url_for('public.testimonials') }}">Testimonials</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="{{ url_for('public.contact') }}">Contact Us</a>
+              </li>
+          </ul>
+      </div>
+  </div>
+</nav>
+{% endblock navbar %}
+
+
+{% block main %}
+<div class="container-sm mt-4">
+    <div class="card">
+        <div class="card-header align-items-center text-center">
+          <h5>Please contact us with any questions or inquiries.</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {{ form.csrf_token }}    
+                <fieldset>
+                    <legend class="border-bottom mb-4">{{ legend }}</legend>
+                    <div class="form-group mb-3">
+                        {{ form.name.label(class='form-control-lable') }}
+                        {% if form.name.errors %}
+                            {{ form.name.label(class='form-control form-control-md is-invalid') }}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.name(class='form-control form-control-md')}}
+                        {% endif %}
+                    </div>
+                    <div class="form-group mb-3">
+                        {{ form.phone.label(class='form-control-lable') }}
+                        {% if form.phone.errors %}
+                            {{ form.phone.label(class='form-control form-control-md is-invalid') }}
+                            <div class="invalid-feedback">
+                                {% for error in form.phone.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.phone(class='form-control form-control-md')}}
+                        {% endif %}
+                    </div>
+                    <div class="form-group mb-3">
+                        {{ form.email.label(class='form-control-lable') }}
+                        {% if form.email.errors %}
+                            {{ form.email.label(class='form-control form-control-md is-invalid') }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class='form-control form-control-md')}}
+                        {% endif %}
+                    </div>
+                    <div class="form-group mb-3">
+                        {{ form.message.label(class='form-control-lable') }}
+                        {% if form.message.errors %}
+                            {{ form.message.label(class='form-control form-control-md is-invalid') }}
+                            <div class="invalid-feedback">
+                                {% for error in form.message.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.message(class='form-control form-control-md')}}
+                        {% endif %}
+                    </div>
+                    <div class="form-group text-center mb-3">
+                        {{ form.submit(class='btn btn-primary signature-color-button', style='width: 75%;') }}
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+      </div>
+</div>
+
+
+{% endblock main %}

@@ -11,7 +11,9 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-from flask_security.models import fsqla_v3 as fsqla
+from flask_login import UserMixin
+
+from ..extensions import login_manager
 
 
 class Base(DeclarativeBase):
@@ -21,10 +23,11 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 
-class Role(Base, fsqla.FsRoleMixin):
+class Role(Base):
     __tablename__ = "roles"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(80), unique=True)
+    info: Mapped[str] = mapped_column(String(250), nullable=True)
 
     users: Mapped[List["User"]] = relationship(back_populates="role")
     
@@ -32,33 +35,35 @@ class Role(Base, fsqla.FsRoleMixin):
         return self.name
 
 
-
-class User(Base, fsqla.FsUserMixin):
+class User(Base, UserMixin):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
-    role: Mapped[int] = mapped_column(ForeignKey("roles.id"))    
+    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"))    
     private_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
     public_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
-    secret_phrase: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
-    hashed_pw: Mapped[str] = mapped_column(String(60), nullable=False)
-    is_vendor: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    secret_key: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+    password: Mapped[str] = mapped_column(String(60), nullable=False)
     
     role: Mapped["Role"] = relationship(back_populates="users")                                        
+    vendor: Mapped["Vendor"] = relationship(back_populates="user")
 
     def __repr__(self) -> str:
         return self.public_username
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+
+
 class Vendor(Base):
     __tablename__ = "vendors"
     id: Mapped[int] = mapped_column(primary_key=True)
-    private_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
-    public_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
-    secret_phrase: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
-    hashed_pw: Mapped[str] = mapped_column(String(60), nullable=False)
-    score: Mapped[int] = mapped_column(Integer, default=1)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    score: Mapped[int] = mapped_column(Integer, default=0)
 
+    user: Mapped["User"] = relationship(back_populates="vendor")
     listings: Mapped[List['Listing']] = relationship(back_populates='vendor')
 
     def __repr__(self) -> str:
