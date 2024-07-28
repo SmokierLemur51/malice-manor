@@ -11,6 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from flask_security.models import fsqla_v3 as fsqla
 
 
 class Base(DeclarativeBase):
@@ -18,6 +19,35 @@ class Base(DeclarativeBase):
 
 
 db = SQLAlchemy(model_class=Base)
+
+
+class Role(Base, fsqla.FsRoleMixin):
+    __tablename__ = "roles"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), unique=True)
+
+    users: Mapped[List["User"]] = relationship(back_populates="role")
+    
+    def __repr__(self) -> str:
+        return self.name
+
+
+
+class User(Base, fsqla.FsUserMixin):
+    __tablename__ = "users"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    role: Mapped[int] = mapped_column(ForeignKey("roles.id"))    
+    private_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+    public_username: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+    secret_phrase: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+    hashed_pw: Mapped[str] = mapped_column(String(60), nullable=False)
+    is_vendor: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    
+    role: Mapped["Role"] = relationship(back_populates="users")                                        
+
+    def __repr__(self) -> str:
+        return self.public_username
 
 
 class Vendor(Base):
@@ -175,6 +205,3 @@ class VendorReview():
 
 class ListingReview():
     pass
-
-
-

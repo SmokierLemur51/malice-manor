@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask
 
-
 load_dotenv()
 
 
@@ -22,8 +21,7 @@ def create_app(**config_overrides):
 	from .models.models import db
 	db.init_app(app)
 
-	from .extensions import fbcrypt
-	fbcrypt.init_app(app)
+	from . import extensions
 
 	# register blueprints
 	from .blueprints.admin.views import admin
