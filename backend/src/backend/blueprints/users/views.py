@@ -13,7 +13,7 @@ from flask_login import (
 )
 
 from . import forms, queries
-from ...models.models import db
+from ...models.models import db, User
 
 users = Blueprint('users', __name__, template_folder="templates/users")
 
@@ -21,7 +21,14 @@ users = Blueprint('users', __name__, template_folder="templates/users")
 def register():
     if current_user.is_athenticated:
         return redirect(url_for("users.invalid_request_credentials"))
-    form = forms.RegisterUserForm()
+    f = forms.RegisterUserForm()
+    if f.validate_on_submit():
+        # Check usernames are not taken
+        pass
+    return render_template('register.html', form=f)
+
+
+
 
 
 
@@ -52,9 +59,14 @@ def login():
 @users.route('/invalid-request')
 def invalid_request_credentials():
     if current_user.is_athenticated:
-        if current_user.role == "vendor":
+        if current_user.role.name == "vendor":
             return redirect(url_for("vendors.home"))
-
+        elif current_user.role.name == "customer":
+            return redirect(url_for("market.index"))
+        else:
+            return redirect(url_for("public.index"))
+    else:
+        return redirect(url_for("public.index"))
 
 
 @users.route('/new-vendor', methods=['GET', 'POST'])
