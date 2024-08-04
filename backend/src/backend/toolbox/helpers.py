@@ -1,6 +1,7 @@
 import random
-from typing import List
 import secrets
+from typing import List
+
 
 def pick_random_choices(l: List, count: int) -> List:
     """

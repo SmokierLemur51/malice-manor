@@ -10,3 +10,6 @@ class RegisterUserForm(FlaskForm):
     password = StringField(label='Password', validators=[DataRequired()])
     submit = SubmitField(label="Submit")
 
+
+
+class
