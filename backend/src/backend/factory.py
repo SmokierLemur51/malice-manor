@@ -27,13 +27,15 @@ def create_app(**config_overrides):
 
 	# register blueprints
 	from .blueprints.admin.views import admin
-	app.register_blueprint(admin)
 	from .blueprints.public.views import public
-	app.register_blueprint(public)
 	from .blueprints.users.views import users
-	app.register_blueprint(users)
 	from .blueprints.vendor.views import vendor
+	
+	app.register_blueprint(admin)
+	app.register_blueprint(public)
+	app.register_blueprint(users)
 	app.register_blueprint(vendor)
+
 
 	with app.app_context():
 		# db.drop_all()

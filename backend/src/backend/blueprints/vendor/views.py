@@ -13,27 +13,31 @@ vendor = Blueprint('vendor', __name__, template_folder="templates/vendor", url_p
 def populate():
     from .populate import populate_vendors
     populate_vendors(db)
-    return redirect(url_for("vendor.index"))
+    return redirect(url_for("vendor.home"))
 
 
 
 @vendor.route("/")
 @login_required
-def index():
-    # check user role for vendor
-    if current_user.role.name == "vendor":
-        elements = {
-            "title": "Welcome",
-            "market_name": os.environ["MARKET_NAME"],
-        }
-        return render_template("vendor_index.html", elements=elements)
-    # customer redirect to market
-    elif current_user.role.name == "customer":
-        return redirect(url_for('market.index'))
+def home():
+    if current_user.role.name != "vendor":
+        # send user to appropriate area via users.redirect_user
+        return redirect('/invalid-request') 
     else:
-        return redirect(url_for('public.index'))
+        # current_orders
+        return render_template('vendor_home.html')
 
 
-@vendor.route("/listings")
-def listings():
-    return render_template("listings.html")
+@vendor.route("/create-listing", methods=['GET', 'POST'])
+@login_required
+def create_listing():
+    return render_template("create_listing.html")
+
+
+# @vendor.route("/listings")
+
+# @vendor.route("/orders")
+
+# @vendor.route("/history")
+
+# @vendor.route("/crm")
