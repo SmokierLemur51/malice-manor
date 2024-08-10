@@ -11,5 +11,3 @@ class RegisterUserForm(FlaskForm):
     submit = SubmitField(label="Submit")
 
 
-
-class

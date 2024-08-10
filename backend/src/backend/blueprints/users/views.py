@@ -28,10 +28,6 @@ def register():
     return render_template('register.html', form=f)
 
 
-
-
-
-
 @users.route('/login', methods=['GET', 'POST'])
 def login():
     # redirect to the portal homepage if authenticated

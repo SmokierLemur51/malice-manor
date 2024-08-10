@@ -30,6 +30,8 @@ def create_app(**config_overrides):
 	app.register_blueprint(admin)
 	from .blueprints.public.views import public
 	app.register_blueprint(public)
+	from .blueprints.users.views import users
+	app.register_blueprint(users)
 	from .blueprints.vendor.views import vendor
 	app.register_blueprint(vendor)
 
