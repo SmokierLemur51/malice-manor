@@ -22,6 +22,10 @@ def check_unique_usernames(db: SQLAlchemy, pub: str, priv: str) -> bool:
     """ 
     """
     try:
-        private = db.session.scalar(db.select(User).where(User.private_username == priv))
-    except 
+        if db.session.scalar(db.select(User).where(User.private_username == priv)):
+            print("no result")
+            return False
+    except Exception as e:
+        print(Exception)
+        return False 
     
