@@ -18,14 +18,18 @@ def get_user(db: SQLAlchemy, u: str) -> User|None:
 
 
 
-def check_unique_usernames(db: SQLAlchemy, pub: str, priv: str) -> bool:
+# Might be best to rename to something like unique_usernames
+def check_unique_usernames(db: SQLAlchemy, priv: str, pub: str) -> bool:
     """ 
     """
     try:
-        if db.session.scalar(db.select(User).where(User.private_username == priv)):
-            print("no result")
+        u = db.session.scalar(db.select(User).where(User.private_username == priv))
+        if u is None:
+            print("No username found.")
+            return True
+        else:
+            print(u.id)
             return False
-    except Exception as e:
-        print(Exception)
+    except AttributeError as e: 
         return False 
     

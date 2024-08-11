@@ -133,6 +133,14 @@ def register_vendor():
 @users.route('/test/<string:priv>/<string:pub>')
 def test(priv, pub):
     if queries.check_unique_usernames(db, priv, pub):
-        print("True")
+        return "True"
     else:
-        print("False")
+        return "False"
+
+
+@users.route('/create-users')
+def create_users():
+    
+    users = [
+        User()
+    ]
