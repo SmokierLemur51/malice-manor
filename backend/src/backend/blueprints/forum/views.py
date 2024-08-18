@@ -37,6 +37,11 @@ def create_post():
         )
         db.session.add(post)
         db.session.commit()
+        # # # # # # # # # # 
+        # Working here ...
+        # Need to create communities (sub-reddits)
+        # As well as
+        return redirect(url_for())
     return render_template("create_post.html", form=_form, elements=elements)
 
 
