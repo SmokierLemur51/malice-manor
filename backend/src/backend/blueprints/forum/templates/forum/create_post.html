@@ -40,7 +40,7 @@
 <div class="container-sm mt-4">
     <div class="card">
         <div class="card-header align-items-center text-center">
-          <h5>Register Market Account</h5>
+          <h5>Create Post</h5>
         </div>
         <div class="card-body">
             <form method="POST">
@@ -48,60 +48,33 @@
                 <fieldset>
                     <legend class="border-bottom mb-4">{{ legend }}</legend>
                     <div class="form-group mb-3">
-                        {{ form.public_username.label(class='form-control-label') }}
-                        {% if form.public_username.errors %}
-                            {{ form.public_username.label(class='form-control form-control-md is-invalid') }}
+                        {{ form.title.label(class='form-control-label') }}
+                        {% if form.title.errors %}
+                            {{ form.title.label(class='form-control form-control-md is-invalid') }}
                             <div class="invalid-feedback">
-                                {% for error in form.public_username.errors %}
+                                {% for error in form.title.errors %}
                                     <span>{{ error }}</span>
                                 {% endfor %}
                             </div>
                         {% else %}
-                            {{ form.public_username(class='form-control form-control-md')}}
+                            {{ form.title(class='form-control form-control-md')}}
                         {% endif %}
                     </div>
                     
                     <div class="form-group mb-3">
-                        {{ form.private_username.label(class='form-control-label') }}
-                        {% if form.private_username.errors %}
-                            {{ form.private_username.label(class='form-control form-control-md is-invalid') }}
+                        {{ form.body.label(class='form-control-label') }}
+                        {% if form.body.errors %}
+                            {{ form.body.label(class='form-control form-control-md is-invalid') }}
                             <div class="invalid-feedback">
-                                {% for error in form.private_username.errors %}
+                                {% for error in form.body.errors %}
                                     <span>{{ error }}</span>
                                 {% endfor %}
                             </div>
                         {% else %}
-                            {{ form.private_username(class='form-control form-control-md')}}
+                            {{ form.body(class='form-control form-control-md')}}
                         {% endif %}
                     </div>
 
-                    <div class="form-group mb-3">
-                        {{ form.password.label(class='form-control-label') }}
-                        {% if form.password.errors %}
-                            {{ form.password.label(class='form-control form-control-md is-invalid') }}
-                            <div class="invalid-feedback">
-                                {% for error in form.password.errors %}
-                                    <span>{{ error }}</span>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            {{ form.password(class='form-control form-control-md')}}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-group mb-3">
-                        {{ form.password_match.label(class='form-control-label') }}
-                        {% if form.password_match.errors %}
-                            {{ form.password_match.label(class='form-control form-control-md is-invalid') }}
-                            <div class="invalid-feedback">
-                                {% for error in form.password_match.errors %}
-                                    <span>{{ error }}</span>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            {{ form.password_match(class='form-control form-control-md')}}
-                        {% endif %}
-                    </div>
 
                     <div class="form-group text-center mb-3">
                         {{ form.submit(class='btn btn-primary signature-color-button', style='width: 75%;') }}

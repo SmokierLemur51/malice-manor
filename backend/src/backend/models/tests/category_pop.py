@@ -9,7 +9,7 @@ from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
 from ..models import ProductCategory, ProductSubCategory
-
+from ..queries import parse_for_category_id
 
 def populate_categories(db: SQLAlchemy) -> None:
     categories = [
@@ -54,17 +54,6 @@ def populate_categories(db: SQLAlchemy) -> None:
             db.session.rollback()
             print(IntegrityError)
 
-
-def parse_for_category_id(categories: List[ProductCategory], term: str) -> int:
-    """ 
-    Params:
-    -categories: List[ProductCategory], list of categories to parse through.
-    -term: str, search term, non-case-sensitive, it receives .title() string method
-    """
-    for c in categories:
-        if c.category == term.title():
-            return c.id
-    return 0
 
 
 def populate_sub_categories(db: SQLAlchemy) -> None:

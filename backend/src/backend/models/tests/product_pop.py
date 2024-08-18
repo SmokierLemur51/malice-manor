@@ -10,31 +10,12 @@ from ..models import (
     Product,
     Vendor,
 )
-from .category_pop import parse_for_category_id
+from ..queries import (
+    parse_for_category_id,
+    parse_for_sub_category_id,
+    parse_for_vendor_id,
+)
 
-
-def parse_for_sub_category_id(sub_categories: List[ProductSubCategory], term: str) -> ProductSubCategory:
-    """
-    Params:
-    -categories: List[ProductSubCategory], list of categories to parse through.
-    -term: str, search term, non-case-sensitive, it receives .title() string method
-    """
-    for c in sub_categories:
-        if c.sub_category == term.title():
-            return c
-    return ProductSubCategory()
-
-
-def parse_for_vendor_id(vendors: List[Vendor], term: str) -> Vendor:
-    """
-    Params:
-    -categories: List[Vendor], list of vendors to parse through.
-    -term: str, search term, non-case-sensitive, it receives .title() string method
-    """
-    for v in vendors:
-        if v.public_username == term.title():
-            return v
-    return Vendor()
 
 
 def populate_products(db: SQLAlchemy) -> None:

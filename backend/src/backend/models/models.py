@@ -47,8 +47,10 @@ class User(Base, UserMixin):
     role: Mapped["Role"] = relationship(back_populates="users")                                        
     vendor: Mapped["Vendor"] = relationship(back_populates="user")
     customer: Mapped["Customer"] = relationship(back_populates="user")
+    listing_comments: Mapped[List['ListingComment']] =relationship(back_populates='author')    
     posts: Mapped[List['ForumPost']] = relationship(back_populates='author')
-    comments: Mapped[List['PostComment']] = relationship(back_populates='author')
+    post_comments: Mapped[List['PostComment']] = relationship(back_populates='author')
+    
 
     def __repr__(self) -> str:
         return self.public_username
@@ -56,7 +58,7 @@ class User(Base, UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return db.session.scalar(db.select(User).where(User.id == user_id))
 
 
 
@@ -139,11 +141,26 @@ class Listing(Base):
     vendor: Mapped['Vendor'] = relationship(back_populates='listings')
     category: Mapped['Category'] = relationship(back_populates='listings')
     sub_category: Mapped['SubCategory'] = relationship(back_populates='listings')
+    listing_comments: Mapped[List['ListingComment']] = relationship(back_populates='listing')
     cart_items: Mapped[List["CartItem"]] = relationship(back_populates="listing")
 
     def __repr__(self) -> str:
         return "Listing: {}, Vendor: {}".format(self.name, self.vendor.public_username)
 
+
+class ListingComment(Base):
+    __tablename__ = "listing_comments"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
+    updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
+    deleted_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True)
+    listing_id: Mapped[int] = mapped_column(ForeignKey('listings.id'))
+    author_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    commment: Mapped[str] = mapped_column(String(1000), nullable=False)
+
+    listing: Mapped['Listing'] = relationship(back_populates='listing_comments')
+    author: Mapped['User'] = relationship(back_populates='listing_comments')
 
 
 class Cart(Base):
@@ -212,10 +229,10 @@ class ForumPost(Base):
     deleted_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True)
     author_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     title: Mapped[str] = mapped_column(String(250), nullable=False)
-    content: Mapped[str] = mapped_column(String(1500), nullable=True)
+    body: Mapped[str] = mapped_column(String(1500), nullable=True)
 
     author: Mapped['User'] = relationship(back_populates='posts')
-    comments: Mapped[List['PostComment']] = relationship(back_populates='post')
+    post_comments: Mapped[List['PostComment']] = relationship(back_populates='post')
 
     def __repr__(self) -> str:
         return self.title
@@ -231,8 +248,8 @@ class PostComment(Base):
     post_id: Mapped[int] = mapped_column(ForeignKey('forum_posts.id'))
     comment: Mapped[str] = mapped_column(String(1500), nullable=True)
 
-    author: Mapped['User'] = relationship(back_populates='comments')
-    post: Mapped['ForumPost'] = relationship(back_populates='comments')
+    author: Mapped['User'] = relationship(back_populates='post_comments')
+    post: Mapped['ForumPost'] = relationship(back_populates='post_comments')
 
     def __repr__(self) -> str:
         return "User {} Comment".format(self.author.public_username)

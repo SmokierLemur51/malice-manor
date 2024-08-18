@@ -5,7 +5,9 @@ from wtforms.validators import DataRequired
 
 
 class CreatePostForm(FlaskForm):
-    pass
+    title = StringField(label='Title', validators=[DataRequired()])
+    body = TextAreaField(label='Body', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 
 class UpdatePostForm(FlaskForm):
@@ -13,7 +15,7 @@ class UpdatePostForm(FlaskForm):
 
 
 class CreateCommentForm(FlaskForm):
-    pass
+    comment = StringField(label="Body")
 
 
 class UpdateCommentForm(FlaskForm):

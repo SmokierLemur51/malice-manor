@@ -27,11 +27,13 @@ def create_app(**config_overrides):
 
 	# register blueprints
 	from .blueprints.admin.views import admin
+	from .blueprints.forum.views import forum
 	from .blueprints.public.views import public
 	from .blueprints.users.views import users
 	from .blueprints.vendor.views import vendor
 	
 	app.register_blueprint(admin)
+	app.register_blueprint(forum)
 	app.register_blueprint(public)
 	app.register_blueprint(users)
 	app.register_blueprint(vendor)

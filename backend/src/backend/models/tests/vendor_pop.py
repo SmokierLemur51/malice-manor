@@ -1,4 +1,4 @@
-
+""" Depreciated 
 
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
@@ -44,3 +44,4 @@ def populate_vendors(db: SQLAlchemy) -> None:
             except IntegrityError as e:
                 db.session.rollback()
                 print(f"Vendor(s) already exist. Error:\n{e}")
+"""

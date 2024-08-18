@@ -24,8 +24,10 @@ def home():
         # send user to appropriate area via users.redirect_user
         return redirect('/invalid-request') 
     else:
-        # current_orders
-        return render_template('vendor_home.html')
+        elements = {
+            'title': f'Your Market | {current_user.public_username}',
+        }
+        return render_template('vendor_home.html', elements=elements)
 
 
 @vendor.route("/create-listing", methods=['GET', 'POST'])

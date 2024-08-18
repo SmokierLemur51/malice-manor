@@ -1,3 +1,4 @@
+import os
 from flask import (
     Blueprint,
     current_app,
@@ -15,6 +16,7 @@ from flask_login import (
 from . import forms, queries
 from ...extensions import fbcrypt
 from ...models.models import db, User
+from ...models.queries import load_role
 from ...toolbox.helpers import generate_secret_key
 
 
@@ -25,12 +27,15 @@ users = Blueprint('users', __name__, template_folder="templates/users")
 def login():
     # redirect to the portal homepage if authenticated
     if current_user.is_authenticated:
-        return redirect(url_for('portal.home'))
+        return redirect('/redirect-user')
     # login page information
-    elements = {"title": "Login"}
+    elements = {
+        "title": "Login",
+        "market_name": os.environ['MARKET_NAME'],    
+    }
     f = forms.LoginForm()
     if f.validate_on_submit():
-        u = queries.get_user(db, f.username.data)
+        u = queries.get_user(db, f.private_username.data)
         print(f"User Pass: {u.password}, Given: {f.password.data}")
         if u and fbcrypt.check_password_hash(u.password, f.password.data):
             login_user(u)
@@ -43,7 +48,7 @@ def login():
 @users.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('portal.login'))
+    return redirect(url_for('public.index'))
 
 
 # Route to redirect users who try and access an area they do not have permission for.
@@ -57,7 +62,7 @@ def redirect_user():
         if current_user.role.name == "admin":
             return redirect(url_for('admin.home'))
         elif current_user.role.name == "vendor":
-            return redirect(url_for('vendors.home'))
+            return redirect(url_for('vendor.home'))
         else:
             return redirect(url_for('market.index'))
     else:
@@ -67,62 +72,68 @@ def redirect_user():
 # Register customer
 @users.route("/register-customer", methods=["GET", "POST"])
 def register_customer():
-    elements = {"title": "Register Market Account"}
+    elements = {
+        "title": "Register Market Account",
+        "market_name": os.environ['MARKET_NAME'],    
+    }
     form = forms.RegisterUserForm()
     if form.validate_on_submit():
         if form.password.data == form.password_match.data: # and queries.check_unique_usernames(db, form.public_username.data, form.private_username.data)
             u = User(
-                role_id=queries.load_role(db, "customer").id,
+                role_id=load_role(db, "customer").id,
                 public_username=form.public_username.data,
                 private_username=form.private_username.data,
                 password=fbcrypt.generate_password_hash(form.password.data),
                 secret_key=generate_secret_key(),
             )
-            with current_app.app_context():    
-                with db.session.begin():
-                    try:
-                        db.session.add(u)
-                        db.session.flush()
-                        # new customer
-                        c = Customer(user_id=u.id)
-                        db.session.add(c)
-                        db.session.commit()
-                    except Exception as e:
-                        db.session.rollback()
-                        print(e)
+            # Need a try and excpet block here to handle a transaction that has already begun
+            # Error: sqlalchemy.exc.InvalidRequestError
+            # Do I even need to have a with db.session.begin() here? 
+            # Need to clean this up before moving into the forum.
+            try:
+                db.session.add(u)
+                db.session.flush()
+                # new customer
+                c = Customer(user_id=u.id)
+                db.session.add(c)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                print(e)
             return redirect(url_for("users.login"))
         else:
             flash("Passwords must match.")
             return render_template("register_customer.html", elements=elements, form=form)
-    return render_template("register_customer.html")
+    return render_template("register_customer.html", elements=elements, form=form)
 
 
 # New vendors 
 @users.route("/register-vendor", methods=["GET", "POST"])
 def register_vendor():
-    elements = {"title": "Register Vendor Account"}
+    elements = {
+        "title": "Register Vendor Account",
+        "market_name": os.environ['MARKET_NAME'],    
+    }
     form = forms.RegisterUserForm()
     if form.validate_on_submit():
         if form.password.data == form.password_match.data:
             u = User(
-                role_id=queries.load_role(db, "vendor").id,
+                role_id=load_role(db, "vendor").id,
                 public_username=form.public_username.data,
                 private_username=form.private_username.data,
                 password=fbcrypt.generate_password_hash(form.password.data),
                 secret_key=generate_secret_key(),
-            )
-            with current_app.app_context():    
-                with db.session.begin():
-                    try:
-                        db.session.add(u)
-                        db.session.flush()
-                        # new vendor
-                        v = Vendor(user_id=u.id)
-                        db.session.add(v)
-                        db.session.commit()
-                    except Exception as e:
-                        db.session.rollback()
-                        print(e)
+            )    
+            try:
+                db.session.add(u)
+                db.session.commit()
+                # new vendor
+                v = Vendor(user_id=u.id)
+                db.session.add(v)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                print(e)
             return redirect(url_for("users.login"))
         else:
             flash("Passwords must match.")
@@ -130,17 +141,10 @@ def register_vendor():
     return render_template("register_vendor.html", elements=elements, form=form)
 
 
+
 @users.route('/test/<string:priv>/<string:pub>')
 def test(priv, pub):
     if queries.check_unique_usernames(db, priv, pub):
-        return "True"
+        return "Unqiue Usernames"
     else:
-        return "False"
-
-
-@users.route('/create-users')
-def create_users():
-    
-    users = [
-        User()
-    ]
+        return "Already taken"
