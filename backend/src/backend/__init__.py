@@ -5,3 +5,5 @@ def run() -> None:
     app.run(debug=True)
 
 
+def init_db() -> None:
+    factory.init_db()

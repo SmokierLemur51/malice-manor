@@ -10,7 +10,7 @@ class Config(object):
     # Generate key with secrets.token_urlsafe()
     SECRET_KEY = 'this-really-needs-to-be-changed'
     # Generate good salt for password with secrets.SystemRandom().getrandbits(128)
-    SECURITY_PASSWORD_SALT = os.environ["SECURITY_PASSWORD_SALT"]
+    # SECURITY_PASSWORD_SALT = os.environ["SECURITY_PASSWORD_SALT"]
 
     # Have session and remember cookie be samesite (flask/flask_login)
     REMEMBER_COOKIE_SAMESITE = "strict"

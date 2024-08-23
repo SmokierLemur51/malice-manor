@@ -92,10 +92,6 @@ def register_customer():
             # Need to clean this up before moving into the forum.
             try:
                 db.session.add(u)
-                db.session.flush()
-                # new customer
-                c = Customer(user_id=u.id)
-                db.session.add(c)
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
@@ -126,10 +122,6 @@ def register_vendor():
             )    
             try:
                 db.session.add(u)
-                db.session.commit()
-                # new vendor
-                v = Vendor(user_id=u.id)
-                db.session.add(v)
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()

@@ -22,3 +22,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 start = "backend:run"
+init_db = "backend:init_db"

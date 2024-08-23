@@ -2,12 +2,8 @@
 
 Malice Manor is a simulated dark net market that is based on Harry Potter lore. 
 
-I am creating it as a means to deep dive into a few things I am very passionate about:
+## What is the Purpose? 
 
-    - The Tor Project
-    - Web Development
-    - Harry Potter
+To preface, I am working on geting my CompTIA Security +, then I will pursue the CCNA, and slowly work my way towards the OSCP. I think that learning how to build, secure, and penetrate systems will be very important. So I am building this darknet market for wizards as a CTF, in the hopes that I can build a community to test me. 
 
-While also learning how to securely implement a flask project. I hope to one day 
-feel confident enough in this project to turn it into a CTF to teach people how to 
-attack and defend servers.
+I plan to use the web development skills I learn to try and gather some freelance development clients. 
