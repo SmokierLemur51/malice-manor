@@ -60,13 +60,13 @@ def logout():
 def redirect_user():
     if current_user.is_authenticated:
         if current_user.role.name == "admin":
-            return redirect(url_for('admin.home'))
+            return redirect(url_for('admin.home'), code=301)
         elif current_user.role.name == "vendor":
-            return redirect(url_for('vendor.home'))
+            return redirect(url_for('vendor.home'), code=301)
         else:
-            return redirect(url_for('market.index'))
+            return redirect(url_for('market.index'), code=301)
     else:
-        return redirect(url_for('public.index'))
+        return redirect(url_for('public.index'), code=301)
         
 
 # Register customer

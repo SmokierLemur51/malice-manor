@@ -26,3 +26,5 @@ def convert_list_string(l: List) -> str:
 
 def generate_secret_key():
     return secrets.token_urlsafe()
+
+
