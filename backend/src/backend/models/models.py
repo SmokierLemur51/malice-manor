@@ -50,6 +50,7 @@ class User(Base, UserMixin):
     listing_comments: Mapped[List['ListingComment']] =relationship(back_populates='author')    
     posts: Mapped[List['ForumPost']] = relationship(back_populates='author')
     post_comments: Mapped[List['PostComment']] = relationship(back_populates='author')
+    forum_communities_owned: Mapped[List['ForumCommunity']] = relationship(back_populates='owner')
     
 
     def __repr__(self) -> str:
@@ -221,6 +222,29 @@ class ListingReview():
     pass
 
 
+class ForumCommunity(Base):
+    __tablename__ = "forum_communities"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
+    updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
+    deleted_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True)
+    owner_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    name: Mapped[str] = mapped_column(String(60), unique=True)
+    description: Mapped[str] = mapped_column(String(500), nullable=True)
+
+    owner: Mapped['User'] = relationship(back_populates='forum_communities_owned')
+    posts: Mapped[List['ForumPost']] = relationship(back_populates='community')
+
+    def __repr__(self) -> str:
+        return self.name
+
+    def check_name_no_spaces(self) -> bool:
+        """ Check for spaces in community name, should be none.
+            Return False if there are any.
+        """
+        return True
+
+
 class ForumPost(Base):
     __tablename__ = "forum_posts"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -228,14 +252,21 @@ class ForumPost(Base):
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
     deleted_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True)
     author_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    community_id: Mapped[int] = mapped_column(ForeignKey('forum_communities.id'))
     title: Mapped[str] = mapped_column(String(250), nullable=False)
     body: Mapped[str] = mapped_column(String(1500), nullable=True)
+    slug: Mapped[str] = mapped_column(String(250), nullable=False)
+    token: Mapped[str] = mapped_column(String(80), nullable=False)
 
     author: Mapped['User'] = relationship(back_populates='posts')
+    community: Mapped['ForumCommunity'] = relationship(back_populates='posts')
     post_comments: Mapped[List['PostComment']] = relationship(back_populates='post')
 
     def __repr__(self) -> str:
         return self.title
+
+    def create_slug(self):
+        self.slug = self.title.replace(" ", "-")
 
 # Needs to add 
 class PostComment(Base):
@@ -252,4 +283,4 @@ class PostComment(Base):
     post: Mapped['ForumPost'] = relationship(back_populates='post_comments')
 
     def __repr__(self) -> str:
-        return "User {} Comment".format(self.author.public_username)
+        return "User {} Comment".format(self.author.public_username)    

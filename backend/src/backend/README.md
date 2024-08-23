@@ -9,4 +9,6 @@ pass: test
 # Catch Up - (Last working on or last worked on)
 
 -Create sub-reddits for posts
+    - Created ForumCommunity, need to populate relationships to other models
+    - Need to add role checking to forums
 -Add uid field for forum posts 
