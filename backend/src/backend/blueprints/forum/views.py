@@ -70,7 +70,7 @@ def create_post(community):
         # # # # # # # # # # 
         # Working here ...
         # Need to create communities (sub-reddits)
-        # As well as
+        # # # # # # # # # # 
         return redirect(url_for())
     return render_template("create_post.html", form=f, elements=elements)
 
@@ -78,7 +78,7 @@ def create_post(community):
 @forum.route('/c/<string:community>', methods=['GET'])
 @login_required
 def community_feed(community):
-    c = queries.query_community(db, community)
+    c = queries.select_community(db, community)
     if c is None:
         # Final version should redirec to page specifically for this err
         # ex: redirect(url_for('forum.create_community')) 
@@ -87,4 +87,7 @@ def community_feed(community):
         e = {
             'title': c.name,
         }
-        return render_template('community_feed.html', elements=e)
+        return render_template(
+            'community_feed.html', 
+            elements=e,
+            posts=queries.select_posts(db, c, 'all', None))

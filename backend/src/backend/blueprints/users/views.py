@@ -23,6 +23,24 @@ from ...toolbox.helpers import generate_secret_key
 users = Blueprint('users', __name__, template_folder="templates/users")
 
 
+# Route to redirect users who try and access an area they do not have permission for.
+# Ex: customers requesting vendor routes
+# Also used after login to prevent redundant code. 
+@users.route('/invalid-request')
+@users.route('/redirect-user')
+@login_required
+def redirect_user():
+    if current_user.is_authenticated:
+        if current_user.role.name == "admin":
+            return redirect(url_for('admin.home'), code=301)
+        elif current_user.role.name == "vendor":
+            return redirect(url_for('vendor.home'), code=301)
+        else:
+            return redirect(url_for('market.index'), code=301)
+    else:
+        return redirect(url_for('public.index'), code=301)
+        
+
 @users.route('/login', methods=['GET', 'POST'])
 def login():
     # redirect to the portal homepage if authenticated
@@ -50,24 +68,6 @@ def logout():
     logout_user()
     return redirect(url_for('public.index'))
 
-
-# Route to redirect users who try and access an area they do not have permission for.
-# Ex: customers requesting vendor routes
-# Also used after login to prevent redundant code. 
-@users.route('/invalid-request')
-@users.route('/redirect-user')
-@login_required
-def redirect_user():
-    if current_user.is_authenticated:
-        if current_user.role.name == "admin":
-            return redirect(url_for('admin.home'), code=301)
-        elif current_user.role.name == "vendor":
-            return redirect(url_for('vendor.home'), code=301)
-        else:
-            return redirect(url_for('market.index'), code=301)
-    else:
-        return redirect(url_for('public.index'), code=301)
-        
 
 # Register customer
 @users.route("/register-customer", methods=["GET", "POST"])
@@ -134,9 +134,9 @@ def register_vendor():
 
 
 
-@users.route('/test/<string:priv>/<string:pub>')
-def test(priv, pub):
-    if queries.check_unique_usernames(db, priv, pub):
-        return "Unqiue Usernames"
-    else:
-        return "Already taken"
+# Post login welcome screen. Show actions available to user.
+@users.route('/welcome')
+@login_required
+def welcome():
+    return render_template('welcome.html')
+    

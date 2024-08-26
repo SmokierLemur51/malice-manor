@@ -1,6 +1,8 @@
+from typing import List
+
 from flask_sqlalchemy import SQLAlchemy
 
-from ...models.models import ForumCommunity
+from ...models.models import ForumCommunity, ForumPost
 
 
 def check_unique(db: SQLAlchemy, n: str) -> bool:
@@ -17,5 +19,35 @@ def check_unique(db: SQLAlchemy, n: str) -> bool:
             return False 
 
 
-def query_community(db: SQLAlchemy, n: str) -> ForumCommunity|None:
+def select_community(db: SQLAlchemy, n: str) -> ForumCommunity|None:
     return db.session.scalar(db.select(ForumCommunity).where(ForumCommunity.name == n))
+
+
+def select_posts(
+        db: SQLAlchemy, 
+        c: ForumCommunity|None, 
+        filter: str, 
+        quanity: int|None,
+    ) -> List[ForumPost]:
+    """ 
+    Select posts from a provided community via filter & quanity.
+
+    :param c:
+        ForumCommunity obj instance to query posts from.
+    :param filter:
+        String.lower() to filter posts by, options are
+        -all
+        -top
+        -hot
+        -new (default)
+    :param quantity:
+        Integer quanity of ForumPost objects returned.
+    """
+    if filter.lower() == "all":
+        if count is None or count is 0:
+            return db.session.scalars(db.select(ForumPost).where(ForumPost.community_id == c.id)).all()
+        else:
+            return db.session.scalars(db.select(ForumPost).where(ForumPost.community_id == c.id)).count(quanity)
+    return []
+
+
