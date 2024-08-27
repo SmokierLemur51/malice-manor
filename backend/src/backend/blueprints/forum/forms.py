@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired
 
 from ...models.models import ForumCommunity
 
+
 class CreateCommunityForm(FlaskForm):
     name = StringField(label='New Community Name', validators=[DataRequired()])
     description = TextAreaField(label='Community Purpose')
@@ -23,8 +24,9 @@ class UpdatePostForm(FlaskForm):
     pass
 
 
-class CreateCommentForm(FlaskForm):
+class CreatePostCommentForm(FlaskForm):
     comment = StringField(label="Body")
+    submit = SubmitField('Comment')
 
 
 class UpdateCommentForm(FlaskForm):

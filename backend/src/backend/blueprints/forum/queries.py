@@ -23,6 +23,9 @@ def select_community(db: SQLAlchemy, n: str) -> ForumCommunity|None:
     return db.session.scalar(db.select(ForumCommunity).where(ForumCommunity.name == n))
 
 
+def select_post(db: SQLAlchemy, ) -> ForumPost|None:
+    return None
+
 def select_posts(
         db: SQLAlchemy, 
         c: ForumCommunity|None, 

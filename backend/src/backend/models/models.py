@@ -265,8 +265,6 @@ class ForumPost(Base):
     def __repr__(self) -> str:
         return self.title
 
-    def create_slug(self):
-        self.slug = self.title.replace(" ", "-")
 
 # Needs to add 
 class PostComment(Base):
