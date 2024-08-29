@@ -23,6 +23,10 @@ def select_community(db: SQLAlchemy, n: str) -> ForumCommunity|None:
     return db.session.scalar(db.select(ForumCommunity).where(ForumCommunity.name == n))
 
 
+def select_communities(db: SQLAlchemy) -> List[ForumCommunity]|None:
+    return db.session.scalars(db.select(ForumCommunity)).all()
+
+
 def select_post(db: SQLAlchemy, ) -> ForumPost|None:
     return None
 
@@ -47,7 +51,7 @@ def select_posts(
         Integer quanity of ForumPost objects returned.
     """
     if filter.lower() == "all":
-        if count is None or count is 0:
+        if count is None or count == 0:
             return db.session.scalars(db.select(ForumPost).where(ForumPost.community_id == c.id)).all()
         else:
             return db.session.scalars(db.select(ForumPost).where(ForumPost.community_id == c.id)).count(quanity)

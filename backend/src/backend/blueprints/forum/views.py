@@ -27,7 +27,8 @@ def feed():
         "title": "Welcome",
         "market_name": os.environ["MARKET_NAME"],
     }
-    return render_template("feed.html", elements=elements)
+    c = queries.select_communities(db)
+    return render_template("feed.html", elements=elements, communities=c)
 
 
 @forum.route("/create-community", methods=['GET', 'POST'])
