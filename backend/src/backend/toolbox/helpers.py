@@ -3,6 +3,9 @@ import secrets
 from typing import List
 
 
+def generate_secret_key():
+    return secrets.token_urlsafe()
+
 def pick_random_choices(l: List, count: int) -> List:
     """
     Return random item/items from provided list.
@@ -22,9 +25,5 @@ def pick_random_choices(l: List, count: int) -> List:
 
 def convert_list_string(l: List) -> str:
     return "".join(v for v in l)
-
-
-def generate_secret_key():
-    return secrets.token_urlsafe()
 
 
