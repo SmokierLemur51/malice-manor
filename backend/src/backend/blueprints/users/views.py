@@ -1,7 +1,9 @@
 import os
+
 from flask import (
     Blueprint,
     current_app,
+    flash,
     redirect,
     render_template,
     url_for,
@@ -45,7 +47,7 @@ def redirect_user():
 def login():
     # redirect to the portal homepage if authenticated
     if current_user.is_authenticated:
-        return redirect('/redirect-user')
+        return redirect(url_for('users.welcome'))
     # login page information
     elements = {
         "title": "Login",
@@ -54,10 +56,9 @@ def login():
     f = forms.LoginForm()
     if f.validate_on_submit():
         u = queries.get_user(db, f.private_username.data)
-        print(f"User Pass: {u.password}, Given: {f.password.data}")
         if u and fbcrypt.check_password_hash(u.password, f.password.data):
             login_user(u)
-            return redirect('/redirect-user')
+            return redirect(url_for('users.welcome'))
         else:
             flash('Invalid credentials.', 'danger')
     return render_template("login.html", elements=elements, form=f)
@@ -133,10 +134,41 @@ def register_vendor():
     return render_template("register_vendor.html", elements=elements, form=form)
 
 
+"""
+After creation, during the first visit, the vendor will be sent here for information to be presented.
 
-# Post login welcome screen. Show actions available to user.
+We will generate a pin on, and only on, their first request to this page. They will then provide us a 
+6-10 digit pin code to be used on withdrawls. A box must also be checked signaling they have their
+recovery phrase and pin saved, those are the only way an account can be updated or recovered. 
+"""
+@users.route("/new-vendor-welcome", methods=['GET', 'POST'])
+@login_required
+def new_vendor_welcome():
+    if current_user.is_authenticated:
+        if current_user.role.name == "vendor":
+            # query vendor account and check this is their first visit
+            v = db.session.scalar(db.select(Vendor).where(
+                Vendor.user_id==current_user.id))
+            # only way to view new_new_vendor_welcome
+            if v.is_first_visit:
+                # set v.is_first_visit False
+                return render_template('new_vendor_welcome.html')
+            else:
+                return redirect(url_for('users.welcome'))
+        else:
+            return redirect('/invalid-request')
+
+
+# Index page for logged in user.
 @users.route('/welcome')
 @login_required
 def welcome():
-    return render_template('welcome.html')
+    return render_template(
+        'welcome.html', 
+        elements={
+            'title': 'Welcome',
+            'market_name': os.environ['MARKET_NAME'],
+            'version': 1.0, 
+            'updates': [],  # market updates, changes, fixes etc
+        })
     

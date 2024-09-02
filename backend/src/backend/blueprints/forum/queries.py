@@ -51,10 +51,10 @@ def select_posts(
         Integer quanity of ForumPost objects returned.
     """
     if filter.lower() == "all":
-        if count is None or count == 0:
+        if quanity is None or quanity == 0:
             return db.session.scalars(db.select(ForumPost).where(ForumPost.community_id == c.id)).all()
         else:
-            return db.session.scalars(db.select(ForumPost).where(ForumPost.community_id == c.id)).count(quanity)
+            return db.session.scalars(db.select(ForumPost).where(ForumPost.community_id == c.id)).limit(quanity)
     return []
 
 

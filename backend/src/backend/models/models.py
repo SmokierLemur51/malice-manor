@@ -67,9 +67,18 @@ class Vendor(Base):
     __tablename__ = "vendors"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    is_first_visit: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Generated at creation, displayed to user, and hashed forever. 
+    recovery_hash: Mapped[str] = mapped_column(String(60))
+    # User created value, hashed and used on withdraw. 
+    withdrawl_pin: Mapped[str] = mapped_column(String(60))
+    # Based off of completed orders and reviews. 
     score: Mapped[int] = mapped_column(Integer, default=0)
+    # Each order can be reviewed by customer, each new review will trigger a re-calculation.
+    average_review: Mapped[float] = mapped_column(Float, default=0.0)
 
     user: Mapped["User"] = relationship(back_populates="vendor")
+    listing_drafts: Mapped[List['ListingDraft']] = relationship(back_populates='vendor')
     listings: Mapped[List['Listing']] = relationship(back_populates='vendor')
 
     def __repr__(self) -> str:
@@ -99,6 +108,7 @@ class Category(Base):
     info: Mapped[str] = mapped_column(String(500), nullable=True)
 
     # relationships
+    listing_drafts: Mapped[List["ListingDraft"]] = relationship(back_populates='category')
     listings: Mapped[List["Listing"]] = relationship(back_populates='category')
     sub_categories: Mapped[List["SubCategory"]] = relationship(back_populates="parent_category")
 
@@ -123,6 +133,30 @@ class SubCategory(Base):
             self.sub_category, self.parent_category.category)
 
 
+class ListingDraft(Base):
+    __tablename__ = "listing_drafts"
+    
+    # default populated info
+    id: Mapped[int] = mapped_column(primary_key=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
+    updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
+    deleted_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True) 
+    # important to note this is vendor_id and not user_id
+    vendor_id: Mapped[int] = mapped_column(ForeignKey('vendors.id'))
+    uuid: Mapped[str] = mapped_column(String(120), nullable=False)
+    # user provided info
+    category_id: Mapped[int] = mapped_column(ForeignKey('categories.id'), nullable=False)
+    name: Mapped[str] = mapped_column(String(120), unique=True)
+    info: Mapped[str] = mapped_column(String(500), nullable=True)
+
+    # relationships
+    vendor: Mapped['Vendor'] = relationship(back_populates='listing_drafts')
+    category: Mapped['Category'] = relationship(back_populates='listing_drafts')
+
+    def __repr__(self) -> str:
+        return self.uuid
+
+
 class Listing(Base):
     __tablename__ = "listings"
 
@@ -137,6 +171,7 @@ class Listing(Base):
     name: Mapped[str] = mapped_column(String(120), unique=True)
     info: Mapped[str] = mapped_column(String(500), nullable=True)
     selling: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    uuid: Mapped[str] = mapped_column(String(120), nullable=False)
 
     # relationships
     vendor: Mapped['Vendor'] = relationship(back_populates='listings')

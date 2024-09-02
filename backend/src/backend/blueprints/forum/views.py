@@ -31,6 +31,20 @@ def feed():
     return render_template("feed.html", elements=elements, communities=c)
 
 
+@forum.route("/feed/<string:filtervalue>")
+def filtered_feed(filtervalue):
+    print(filtervalue)
+    return render_template("filtered_feed.html")
+
+
+# Find new communities
+@forum.route("/explore-communities")
+@login_required
+def explore_communities():
+    return render_template("explore_communities.html")
+
+
+
 @forum.route("/create-community", methods=['GET', 'POST'])
 @login_required
 def create_community():
@@ -107,11 +121,9 @@ def create_post(community):
             form=f, 
             elements={
                 'title': 'Create Forum Post',
-                'market_name': os.environ['MARKET_NAME'],
-            })
+                'market_name': os.environ['MARKET_NAME']})
 
 
-@forum.route("/c/")
 
 @forum.route('/c/<string:community>/<string:token>/<string:post_slug>', methods=['GET'])
 @login_required

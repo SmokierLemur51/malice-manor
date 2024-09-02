@@ -38,14 +38,14 @@
     <div class="col"">
       <div class="card">
         <div class="card-body">
-          Malice Manor,
+          Malice Manor
         </div>
       </div>
     </div>
     <div class="col" style="color: white;">
       <div class="card paynes-gray-backdrop">
         <div class="card-body">
-          This is some text within a card body.
+          CTF
         </div>
       </div>
     </div>
@@ -56,12 +56,34 @@
 <div class="container-lg" >
   <div class="card">
       <div class="card-header">
-      Featured
+        Who, what, when, where and why? 
       </div>
       <div class="card-body">
-          <h5 class="card-title">Special title treatment</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+          <h5 class="card-title">Malice manor is a simulated Dark-Web marketplace set in the Harry Potter universe.</h5>
+
+          <p class="card-text mt-3">
+            I have been teaching myself how to program over the last year or two, and I thought this project 
+            would be an interesting tribute to the knowledge and skillset I have devleoped. In the future, I would
+            like to turn this into a CTF/Web-Dev learning center for those interested in learning outside 
+            of youtube tutorial hell.  
+          </p>
+
+          <p class="card-text mt-3">
+            I enjoy reading and learning about hacking, security best practices, methods of attack and web development.
+            When I found out about the Tor Project, I became very interested in dark web marketplaces and their development process.
+            I imagine building and operating a dark web marketplace is no easy feat, and after taking account of who 
+            your enemies are (black-hats, global law enforcement, and three letter agencies), you see how big of a feat it is to operate a market.
+            So building my own marketplace (without the illegal content) seemed like a fun project to take on. 
+          </p>
+
+          <div class="row align-items-center">
+            <div class="col text-center">
+              <a href="{{ url_for('users.login') }}" class="btn btn-primary" style="width: 50%;">Explore the Market</a>
+            </div>
+            <div class="col text-center">
+              <a href="https://github.com/SmokierLemur51/malice-manor" class="btn btn-primary" style="width: 50%;">Source Code</a>
+            </div>
+          </div>
       </div>
   </div>
 </div>
