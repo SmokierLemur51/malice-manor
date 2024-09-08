@@ -1,3 +1,16 @@
+---------------------------------------------------------------------------
+## [1.0.1] - 2024/09/
+
+### Working On
+- Fixing issue [1], not validating unique usernames.
+
+- Fine tuning the user creation process, creating seed phrases for recovery.
+
+### Added 
+
+### Changed
+
+---------------------------------------------------------------------------
 ## [1.0.0] - 2024/09/02
 
 ### Working on
@@ -20,4 +33,4 @@ authenticated but is not a vendor role, they are sent to the invalid request rou
 ### Changed
 - In the users.login route, if the current user is authenticated, we do not send them to the redirect page, they are now sent to the new users.welcome.
 
-
+---------------------------------------------------------------------------

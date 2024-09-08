@@ -11,19 +11,12 @@ from ...models.models import db, Listing, ListingDraft, Vendor
 vendor = Blueprint('vendor', __name__, template_folder="templates/vendor", url_prefix="/vendors")
 
 
-# make sure all authenticated users are vendors
+# Make sure all authenticated users are vendor roles
 @vendor.before_request
 def check_vendor():
     if current_user.is_authenticated:
         if current_user.role.name != 'vendor':
             return redirect('/invalid-request')
-
-
-# checking to see if before_request works ...
-@vendor.route('/test')
-@login_required
-def test():
-    return "Failed"
 
 
 @vendor.route("/")
@@ -89,7 +82,13 @@ def finalize_listing(uuid):
     f.subcategories.choices = queries.select_categories_sub_categories(db, draft.category.id)
     if f.validate_on_submit():
         l = Listing(
-            
+            category_id=draft.category_id,
+            sub_category_id=f.subcategory.data,
+            vendor_id=current_user.id,
+            name=f.name.data,
+            info=f.info.data,
+            selling=f.selling.data,
+            uuid=uuid.uuid4(),
         )
         try:
             db.session.add(l)

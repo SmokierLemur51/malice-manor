@@ -1,6 +1,7 @@
 from typing import List
 from flask_sqlalchemy import SQLAlchemy
 
+from .forms import RegisterUserForm
 from ...models.models import (
     User
 )
@@ -44,4 +45,23 @@ def check_unique_usernames(db: SQLAlchemy, priv: str, pub: str) -> bool:
             return False
     except AttributeError as e: 
         return False 
+
+
+
+# With this function, we are going to check for:
+#   - unique username
+#   - passwords provided match
+#
+def check_registration(db: SQLAlchemy, f: RegisterUserForm) -> bool:
+    """ Will check the data provided from user form for a matching password and unique
+        usernames
+    """
+    if (f.password.data == f.password_match.data and
+            check_unique_usernames(db, f.private_username.data, f.public_username.data)): # and password
+        return True
+        
+    else:
+        return False
     
+
+

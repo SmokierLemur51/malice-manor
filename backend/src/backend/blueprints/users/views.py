@@ -79,7 +79,7 @@ def register_customer():
     }
     form = forms.RegisterUserForm()
     if form.validate_on_submit():
-        if form.password.data == form.password_match.data: # and queries.check_unique_usernames(db, form.public_username.data, form.private_username.data)
+        if queries.check_registration(db, form): # check unique username
             u = User(
                 role_id=load_role(db, "customer").id,
                 public_username=form.public_username.data,
@@ -113,7 +113,7 @@ def register_vendor():
     }
     form = forms.RegisterUserForm()
     if form.validate_on_submit():
-        if form.password.data == form.password_match.data:
+        if queries.check_registration(db, form): 
             u = User(
                 role_id=load_role(db, "vendor").id,
                 public_username=form.public_username.data,
@@ -129,7 +129,7 @@ def register_vendor():
                 print(e)
             return redirect(url_for("users.login"))
         else:
-            flash("Passwords must match.")
+            flash("Error, please try again.")
             return render_template("register_vendor.html", elements=elements, form=form)
     return render_template("register_vendor.html", elements=elements, form=form)
 
