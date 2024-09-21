@@ -17,9 +17,10 @@ from flask_login import (
 
 from . import forms, queries
 from ...extensions import fbcrypt
-from ...models.models import db, User
+from ...models.models import db, User, Vendor
 from ...models.queries import load_role
 from ...toolbox.helpers import generate_secret_key
+from ...toolbox import seed
 
 
 users = Blueprint('users', __name__, template_folder="templates/users")
@@ -127,6 +128,7 @@ def register_vendor():
             except Exception as e:
                 db.session.rollback()
                 print(e)
+            # New vendor must log in, then will be sent to setup vendor account.
             return redirect(url_for("users.login"))
         else:
             flash("Error, please try again.")
@@ -134,35 +136,12 @@ def register_vendor():
     return render_template("register_vendor.html", elements=elements, form=form)
 
 
-"""
-After creation, during the first visit, the vendor will be sent here for information to be presented.
 
-We will generate a pin on, and only on, their first request to this page. They will then provide us a 
-6-10 digit pin code to be used on withdrawls. A box must also be checked signaling they have their
-recovery phrase and pin saved, those are the only way an account can be updated or recovered. 
-"""
-@users.route("/new-vendor-welcome", methods=['GET', 'POST'])
-@login_required
-def new_vendor_welcome():
-    if current_user.is_authenticated:
-        if current_user.role.name == "vendor":
-            # query vendor account and check this is their first visit
-            v = db.session.scalar(db.select(Vendor).where(
-                Vendor.user_id==current_user.id))
-            # only way to view new_new_vendor_welcome
-            if v.is_first_visit:
-                # set v.is_first_visit False
-                return render_template('new_vendor_welcome.html')
-            else:
-                return redirect(url_for('users.welcome'))
-        else:
-            return redirect('/invalid-request')
-
-
-# Index page for logged in user.
 @users.route('/welcome')
 @login_required
 def welcome():
+    """Index page for authenticated users. View market information, important updates, 
+    """
     return render_template(
         'welcome.html', 
         elements={

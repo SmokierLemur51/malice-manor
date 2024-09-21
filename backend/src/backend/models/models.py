@@ -67,7 +67,11 @@ class Vendor(Base):
     __tablename__ = "vendors"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    is_first_visit: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Used to check if user has setup vendor account. 
+    setup: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Approved bool will control if vendor can make forum posts or list products.
+    approved: Mapped[bool] = mapped_column(Boolean, default=True)
+    public_key: Mapped[str] = mapped_column(String(500), nullable=True)
     # Generated at creation, displayed to user, and hashed forever. 
     recovery_hash: Mapped[str] = mapped_column(String(60))
     # User created value, hashed and used on withdraw. 

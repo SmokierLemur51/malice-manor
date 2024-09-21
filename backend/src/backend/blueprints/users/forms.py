@@ -1,7 +1,15 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, StringField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired
-
+from wtforms import (
+    BooleanField,
+    EmailField, 
+    StringField, 
+    SubmitField,
+    TextAreaField, 
+)
+from wtforms.validators import (
+    DataRequired,
+    Length,
+)
 
 
 class RegisterUserForm(FlaskForm):
@@ -17,3 +25,12 @@ class LoginForm(FlaskForm):
     password = StringField(label='Password', validators=[DataRequired()])
     submit = SubmitField(label="Submit")
 
+
+class NewVendorSetup(FlaskForm):
+    seed_acknowledgment = BooleanField(label='I have saved my seed phrase.', validators=[
+        DataRequired(message="Your account will not be recoverable without your seed phrase.")])
+    withdrawl_pin = StringField(label='Withdraw Pin', validators=[
+        DataRequired(message='Please enter a 6-10 digit pin.'), Length(min=6, max=10)])
+    withdrawl_match = StringField(label='Withdraw Pin', validators=[
+        DataRequired(message='Please enter a 6-10 digit pin.'), Length(min=6, max=10)])
+    submit = SubmitField(label='Finish Venor Registration')

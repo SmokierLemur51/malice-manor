@@ -11,12 +11,74 @@ from ...models.models import db, Listing, ListingDraft, Vendor
 vendor = Blueprint('vendor', __name__, template_folder="templates/vendor", url_prefix="/vendors")
 
 
-# Make sure all authenticated users are vendor roles
 @vendor.before_request
 def check_vendor():
+    """Make sure all authenticated users are actually vendor roles."""
     if current_user.is_authenticated:
         if current_user.role.name != 'vendor':
             return redirect('/invalid-request')
+
+
+@vendor.before_request
+def check_approval():
+    """If the Vendor instance does not exist in the database, send to setup page."""
+    if current_user.vendor.setup is False:
+        return redirect(url_for("vendor.setup_account"))
+    
+
+@vendor.route("/new-vendor-setup", methods=['GET', 'POST'])
+@login_required
+def setup_account():
+    """After creation, during the first visit, the vendor will 
+    be sent here for information to be presented.
+
+    We will generate a pin on, and only on, their 
+    first request to this page. They will then provide us a 
+    6-10 digit pin code to be used on withdrawls. A box must
+    also be checked signaling they have their recovery phrase 
+    and pin saved, those are the only way an account can be 
+    updated or recovered. 
+    """
+    if current_user.is_authenticated and current_user.role.name == "vendor":
+        elements = {
+            'title': "Vendor Setup | {}".format(current_user.public_username),
+            'market_name': os.environ['MARKET_NAME'],
+        }
+        seed_phrase = seed.generate_seed_phrase(seed.word_list)
+        f = forms.NewVendorSetup()
+        if f.validate_on_submit(): # can pin comparison go here ??
+            if f.withdrawl_pin.data == f.withdrawl_match.data:
+                try:
+                    db.session.add(Vendor(
+                        user_id=current_user.id,
+                        recovery_hash=fbcrypt.generate_password_hash(seed_phrase),
+                        withdrawl_pin=fbcrypt.generate_password_hash(f.withdrawl_pin.data),
+                    ))            
+                    db.session.commit()
+                    # Successful creation of Vendor, send user to vendor welcome page.
+                    return redirect(url_for('vendor.welcome'))
+                except Exception as e:
+                    db.session.rollback()
+                    print(e)
+                    # There was an exception with creating the vendor object, reload the page.
+                    return render_template("new_vendor_setup.html", form=f)
+            else:
+                flash("Pin provided must match.")
+                # User is authenticated, form has been validated, but pins provided do not match.
+                return render_template("new_vendor_setup.html", form=f)
+        # If user is authenticated, and the NewVendorSetup form has not been validated
+        return render_template("new_vendor_setup.html", form=f)
+    else:
+        return redirect('/invalid-request')
+
+
+@vendor.route("/welcome")
+@login_required
+def vendor_welcome():
+    """Intended for vendors on their first visit after creation, or for returning vendors
+    to read about some of the tools we have built for them.
+    """
+    return "Welcome"
 
 
 @vendor.route("/")
