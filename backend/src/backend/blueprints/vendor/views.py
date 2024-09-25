@@ -12,7 +12,7 @@ vendor = Blueprint('vendor', __name__, template_folder="templates/vendor", url_p
 
 
 @vendor.before_request
-def check_vendor():
+def check_permissions():
     """Make sure all authenticated users are actually vendor roles."""
     if current_user.is_authenticated:
         if current_user.role.name != 'vendor':
@@ -39,9 +39,9 @@ def setup_account():
     and pin saved, those are the only way an account can be 
     updated or recovered. 
     """
-    if current_user.is_authenticated and current_user.role.name == "vendor":
+    if current_user.is_authenticated and current_user.role.name == "vendor": # role is already handled in before_request
         elements = {
-            'title': "Vendor Setup | {}".format(current_user.public_username),
+            f'title': "Vendor Setup | {current_user.public_username}",
             'market_name': os.environ['MARKET_NAME'],
         }
         seed_phrase = seed.generate_seed_phrase(seed.word_list)

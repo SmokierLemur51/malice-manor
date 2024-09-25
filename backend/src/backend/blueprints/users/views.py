@@ -26,13 +26,12 @@ from ...toolbox import seed
 users = Blueprint('users', __name__, template_folder="templates/users")
 
 
-# Route to redirect users who try and access an area they do not have permission for.
-# Ex: customers requesting vendor routes
-# Also used after login to prevent redundant code. 
 @users.route('/invalid-request')
 @users.route('/redirect-user')
 @login_required
 def redirect_user():
+    """Redirect users who try and access a page outside of user permissions.
+    Ex: Customer requesting Vendor routes."""
     if current_user.is_authenticated:
         if current_user.role.name == "admin":
             return redirect(url_for('admin.home'), code=301)
