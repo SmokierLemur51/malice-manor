@@ -26,6 +26,7 @@ def check_approval():
         return redirect(url_for("vendor.setup_account"))
     
 
+
 @vendor.route("/new-vendor-setup", methods=['GET', 'POST'])
 @login_required
 def setup_account():
@@ -78,6 +79,9 @@ def vendor_welcome():
     """Intended for vendors on their first visit after creation, or for returning vendors
     to read about some of the tools we have built for them.
     """
+    elements = {
+        'title': 'Welcome',
+    }
     return "Welcome"
 
 

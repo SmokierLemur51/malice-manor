@@ -321,3 +321,35 @@ class PostComment(Base):
 
     def __repr__(self) -> str:
         return "User {} Comment".format(self.author.public_username)    
+
+
+
+class MarketVersionRelease(Base):
+    __tablename__ = "market_versions"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    version: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
+    
+    fixed: Mapped[List["MarketFixedIssues"]] = relationship(back_populates="market_version_release")
+    added: Mapped[List["MarketFeatureAdditions"]] = relationship(back_populates="market_version_release")
+
+
+class MarketFixedIssue(Base): 
+    __tablename__ = "fixed_issues"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    market_version_id: Mapped[int] = mapped_column(ForeignKey('market_versions.id'))
+    issue: Mapped[str] = mapped_column(String(120))
+    info: Mapped[str] = mapped_column(String(500))
+
+
+    market_version_release: Mapped["MarketVersionRelease"] = relationship(back_populates="fixed")
+
+
+class MarketAddedFeatures(Base): 
+    __tablename__ = "added_features"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    market_version_id: Mapped[int] = mapped_column(ForeignKey('market_versions.id'))
+    feature: Mapped[str] = mapped_column(String(120))
+    info: Mapped[str] = mapped_column(String(500))
+
+
+    market_version_release: Mapped["MarketVersionRelease"] = relationship(back_populates="added")
