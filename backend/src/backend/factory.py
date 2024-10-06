@@ -17,11 +17,8 @@ def create_app(**config_overrides):
 	# config overrides
 	app.config.update(config_overrides)
 
-	# extensions	
-	from .models.models import db
+	from .extensions import db,fbcrypt, login_manager
 	db.init_app(app)
-
-	from .extensions import fbcrypt, login_manager
 	fbcrypt.init_app(app)
 	login_manager.init_app(app)
 
